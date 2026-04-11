@@ -1,39 +1,53 @@
 import { useState } from "react"
 import { Pressable, StyleSheet, TextInput, View, Text } from "react-native"
 import useGetUserDetails from "../hooks/useGetUserDetails"
+import useGitContext from "../context/GitContext"
+import LoadingPage from "./loading"
+
+
 
 const InputPage = () => {
 
+    const [inputValue, setInputValue] = useState("")
     const { loading, getUserDetails } = useGetUserDetails()
 
-    const [inputValue, setInputValue] = useState("")
+    const { user } = useGitContext()
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.page}>
-                <TextInput
-                    placeholder="Enter Username"
-                    style={styles.inputField}
-                    value={inputValue}
-                    onChangeText={setInputValue}
-                />
-                <Pressable
-                    style={styles.btn}
-                
-                    onPress={
-                        async () => {
-                            const data = await getUserDetails(inputValue)
-                            console.log("User Data : \n",JSON.stringify(data, null, 2))
+    if (!loading) {
+
+
+        return (
+            <View style={styles.container}>
+                <View style={styles.page}>
+                    <TextInput
+                        placeholder="Enter Username"
+                        style={styles.inputField}
+                        value={inputValue}
+                        onChangeText={setInputValue}
+                    />
+                    <Pressable
+                        style={styles.btn}
+
+                        onPress={
+                            async () => {
+                                const data = await getUserDetails(inputValue)
+                                console.log("User Data : \n", JSON.stringify(user, null, 2))
+
+                            }
                         }
-                    }
-                >
-                    <View>
-                        <Text style={{ color: "#fff" }}>Submit</Text>
-                    </View>
-                </Pressable>
+                    >
+                        <View>
+                            <Text style={{ color: "#fff" }}>Submit</Text>
+                        </View>
+                    </Pressable>
+                </View>
             </View>
-        </View>
-    )
+        )
+    } else {
+        return (
+            <LoadingPage />
+        )
+    }
 }
 
 export default InputPage
