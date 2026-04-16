@@ -3,11 +3,13 @@ import { useState } from "react"
 const useRepoDetails = () => {
     const [loading, setLoading] = useState(false)
 
-    const getRepoDetails = async ({ repoName,username }: { repoName: any, username:string }) => {
+    const getRepoDetails = async ({ repoName }: { repoName: any }) => {
+        // console.log("Repo Name : ",repoName)
         setLoading(true)
         try {
             const response = await fetch(repoName.languages_url)
             const data = await response.json()
+            // console.log("Repo Details : ",JSON.stringify(data,null,2))
             return data
         } catch (error) {
             console.error("Error fetching repository details:", error)
