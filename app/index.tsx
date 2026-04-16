@@ -13,15 +13,7 @@ export default function index() {
 
   const [inputValue, setInputValue] = useState("")
   const { loading, getUserDetails } = useGetUserDetails()
-  // const { user } = useGitContext()
-  // useEffect(() => {
-  //   navigate("/home")
-  // })
-  // return (
-  //   <View>
-  //     <Text>hello</Text>
-  //   </View>
-  // )
+
   if (!loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -39,7 +31,9 @@ export default function index() {
 
                 onPress={
                   async () => {
-                    const data = await getUserDetails("hiteshchoudhary")
+                    // const data = await getUserDetails("hiteshchoudhary")
+                    // const data = await getUserDetails("aanandShubham")
+                    const data = await getUserDetails(inputValue)
                     // console.log("User Data input  : \n", JSON.stringify(data, null, 2))
                     navigate("/home")
                   }
