@@ -26,10 +26,12 @@ const getLanguagePercentAndColor = ({ languages }: { languages: Object }) => {
     const percentages = Object.entries(languages).map(([lang, value]) => ({
         language: lang,
         percentage: ((value / total) * 100).toFixed(2),
-        languageColor: languageColors[lang] || "#000000"
+        languageColor: languageColors[lang] || "#fff"
     }))
 
-    console.log("Language Percentages : ", JSON.stringify(percentages, null, 2))
+    // console.log("Language Percentages : ", JSON.stringify(percentages, null, 2))
+
+    return percentages
 
 }
 
