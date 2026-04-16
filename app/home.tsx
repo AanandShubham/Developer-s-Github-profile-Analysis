@@ -1,9 +1,13 @@
-import React from 'react'
-
-import { StyleSheet, View, Text, Image, FlatList } from "react-native"
+import React, { use, useEffect, useMemo, useState } from 'react'
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View, Text, Image, FlatList, Pressable } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import useGitContext from './context/GitContext'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import AnalysisChart from './components/AnalysisChart'
+import useRepoDetails from './hooks/useRepoDetails'
+import getLanguagePercentAndColor from './utils/getLanguagePercentAndColor'
+import RepoDetailsChard from './components/RepoDetailsChard';
 
 
 // create language Analitics Chart and Repo Details Card 
@@ -12,22 +16,36 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 const HomePage = () => {
 
     const { user, totalForks, totalStars, repos } = useGitContext()
-    // if (user != null) {
-    //     // console.log("User Data HOme : ", JSON.stringify(user, null, 2))
-    //     console.log("usranem : ", user.name)
-    //     console.log("profile Url : ", user.avatar_url)
-    //     console.log("url : ", user.url)
+    const reversedRepos = useMemo(
+        () => {
+            return repos ? [...repos].reverse() : []
+        }, [repos]
+    )
 
-    // }
-    // else
-    //     console.log("User Data Unavailable")
-    
+    const { getRepoDetails, loading } = useRepoDetails()
+    const [repoName, setRepoName] = useState(reversedRepos && reversedRepos.length > 0 ? reversedRepos[0] : "")
+    const [chartDetails, setChartDetails] = useState<any>([])
+    const [showRepoDetails, setShowRepoDetails] = useState(false)
+
+    useEffect(() => {
+        if (repoName) {
+            const fetchRepoDetails = async () => {
+                const details = await getRepoDetails({ repoName })
+                // console.log("REpo Details in Home Page : ",details)
+                const languageDetails = getLanguagePercentAndColor({ languages: details })
+                setChartDetails(() => languageDetails)
+                console.log("Language Chart Details : ", JSON.stringify(chartDetails, null, 2))
+            }
+            fetchRepoDetails()
+        }
+    }, [repoName])
+
     return (
         <SafeAreaView style={styles.container}>
             <SafeAreaProvider>
                 <View style={styles.container}>
                     <LinearGradient
-                        colors={["#e1e18d", "#73f3"]}
+                        colors={["#E1E18D", "#71D3F3"]}
                         start={{ x: 0.2, y: 0 }}
                         end={{ x: 0.8, y: 1 }}
                         style={styles.page}
@@ -45,6 +63,7 @@ const HomePage = () => {
                         </View>
 
                         {/* // profile details */}
+
                         <View style={styles.profileDetails}>
                             <View style={
                                 {
@@ -55,60 +74,110 @@ const HomePage = () => {
                                     display: "flex",
                                     justifyContent: "space-around",
                                     alignItems: "center",
+                                    shadowColor: "#0000007b",
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 2,
+                                    },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 3.84,
+                                    elevation: 5,
                                 }
                             }>
                                 {/* Profile Photo */}
                                 <Image
-                                    style={{ width: "99%", height: "99%", borderRadius: 15 }}
+                                    style={{ width: "95%", height: "95%", borderRadius: 15 }}
                                     source={{ uri: user?.avatar_url }}
                                 />
                             </View>
 
-                            <View style={{
-                                width: "65%",
-                                height: "100%",
-                                display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "flex-start",
-                                backgroundColor: "#abab6d49",
-                                borderRadius: 15,
-                                padding: 10,
-                                gap: 5,
-                            }}>
-                                {/* name and other details */}
-                                <Text>{user?.name}</Text>
-                                <Text>{user?.email || user?.blog}</Text>
-                                <Text>{user?.location}</Text>
-                                <Text>{user?.bio}</Text>
-                            </View>
+                            <LinearGradient
+                                // colors={["#A2CEB5", "#BCCB91"]}
+                                colors={["#A2CEB5", "#BCCB91"]}
+                                start={{ x: 0.95, y: 1 }}
+                                end={{ x: 0.1, y: 0.1 }}
+                                style={{
+                                    width: "66%",
+                                    height: "100%",
+                                    borderRadius: 15,
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "flex-start",
+                                    paddingHorizontal: 20,
+                                    gap: 10,
+                                    shadowColor: "#0000005f",
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 2,
+                                    },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 3.84,
+                                    elevation: 5,
+                                }}
+                            >
+                                <Text style={{ width: "100%", fontStyle: "italic", fontWeight: "bold", fontSize: 20 }}>{user?.name}</Text>
+                                <Text style={{ width: "100%", fontStyle: "italic", fontWeight: "semibold", fontSize: 15 }}>{user?.email || user?.blog || "Email:- Not Available"}</Text>
+                                <Text style={{ width: "100%", fontStyle: "italic", fontWeight: "normal", fontSize: 15 }}>{user?.location || "Address :- Not available"}</Text>
+                                <Text style={{ width: "100%", fontStyle: "italic", }}>{user?.bio || "About :- Not Available"}</Text>
+                            </LinearGradient>
                         </View>
                         {/* // follower */}
                         <View style={styles.followers}>
-                            <View style={{
-                                width: "32%",
-                                height: "100%",
-                                borderRadius: 15,
-                                backgroundColor: "#abab6d49",
-                                display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "center",
-                            }}>
-                                <Text>{user?.followers}</Text>
+                            <LinearGradient
+                                colors={["#A2CEB5", "#BCCB91"]}
+                                start={{ x: 0.95, y: 1.5 }}
+                                end={{ x: 0.1, y: 1 }}
+                                style={{
+                                    width: "32%",
+                                    height: "100%",
+                                    borderRadius: 15,
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    paddingHorizontal: 20,
+                                    gap: 10,
+                                    shadowColor: "#0000005f",
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 2,
+                                    },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 3.84,
+                                    elevation: 5,
+                                }}
+                            >
+                                <Text>{user?.followers || 0}</Text>
                                 <Text>followers</Text>
-                            </View>
 
-                            <View style={{
-                                width: "32%",
-                                height: "100%",
-                                borderRadius: 15,
-                                backgroundColor: "#abab6d49",
-                                display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "center",
-                            }}>
-                                <Text>{user?.following}</Text>
+                            </LinearGradient>
+
+                            <LinearGradient
+                                colors={["#A2CEB5", "#BCCB91"]}
+                                start={{ x: 0.95, y: 0.1 }}
+                                end={{ x: 0.1, y: 1 }}
+                                style={{
+                                    width: "32%",
+                                    height: "100%",
+                                    borderRadius: 15,
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    paddingHorizontal: 20,
+                                    gap: 10,
+                                    shadowColor: "#0000005f",
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 2,
+                                    },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 3.84,
+                                    elevation: 5,
+                                }}
+                            >
+                                <Text>{user?.following || 0}</Text>
                                 <Text>following</Text>
-                            </View>
+
+                            </LinearGradient>
 
                             <View style={{
                                 width: "32%",
@@ -119,7 +188,7 @@ const HomePage = () => {
                                 justifyContent: "space-around",
                                 alignItems: "center",
                             }}>
-                                <Text>{user?.public_repos}</Text>
+                                <Text>{user?.public_repos || 0}</Text>
                                 <Text>repositories</Text>
                             </View>
 
@@ -131,7 +200,7 @@ const HomePage = () => {
                                     fontWeight: "bold",
                                     fontSize: 18,
                                     width: "auto",
-                                    backgroundColor: "#d4d46ef8",
+                                    backgroundColor: "#A2CEB5",
                                     paddingHorizontal: 10,
                                     paddingVertical: 5,
                                     borderRadius: 10,
@@ -144,22 +213,23 @@ const HomePage = () => {
                                 justifyContent: "space-around",
                                 alignItems: "center",
                                 flexDirection: "row",
-                                backgroundColor: "#cfcf86",
+                                backgroundColor: "transparent",
                                 borderRadius: 15,
                                 // paddingHorizontal: 10,
                                 // paddingVertical: 5,
                             }}>
-                                <Text style={[styles.textIllusion, { width: "15%", borderRadius: 50 }]}>0</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", borderRadius: 50 }]}>0</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", borderRadius: 50 }]}>0</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", borderRadius: 50 }]}>0</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", borderRadius: 50 }]}>0</Text>
+
+                                <FontAwesome name="github" size={32} color="#000" />
+                                <FontAwesome name="facebook" size={32} color="#1877F2" />
+                                <Ionicons name="logo-instagram" size={32} color="#E1306C" />
+                                <FontAwesome name="twitter" size={32} color="#1DA1F2" />
+                                <FontAwesome name="telegram" size={32} color="#0088cc" />
 
                             </View>
                         </View>
 
                         {/* forks and stars */}
-                        <View style={styles.forksAndStars}>
+                        {/* <View style={styles.forksAndStars}>
                             <View>
                                 <Text style={{ fontWeight: "bold", fontSize: 18 }}>Total Forks</Text>
                                 <Text>{totalForks}</Text>
@@ -169,7 +239,7 @@ const HomePage = () => {
                                 <Text>{totalStars}</Text>
                             </View>
 
-                        </View>
+                        </View> */}
 
                         {/* // repository details */}
                         <View style={styles.repositoryDetails}>
@@ -178,7 +248,7 @@ const HomePage = () => {
                                     fontWeight: "bold",
                                     fontSize: 18,
                                     width: "auto",
-                                    backgroundColor: "#d4d46ef8",
+                                    backgroundColor: "#A2CEB5",
                                     paddingHorizontal: 10,
                                     paddingVertical: 5,
                                     borderRadius: 10,
@@ -191,24 +261,46 @@ const HomePage = () => {
                                 gap: 10,
                             }}>
                                 <FlatList
-                                    data={repos}
+                                    data={reversedRepos}
+
                                     keyExtractor={(item) => item.id.toString()}
                                     renderItem={({ item }) => (
-                                        <View style={{
-                                            width: "100%",
-                                            height: 50,
-                                            backgroundColor: "#d9d95eeb",
-                                            borderRadius: 10,
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                            flexDirection: "row",
-                                            paddingHorizontal: 10,
-                                        }}>
-                                            <Text>{item.name}</Text>
-                                            <Text>{item.stargazers_count} Stars</Text>
-                                            {/* <Text>{item.forks_count} Forks</Text> */}
-                                        </View>
+
+                                        <LinearGradient
+                                            colors={["#A2CEB5", "#bbcb91cd"]}
+                                            start={{ x: 0.5, y: 1 }}
+                                            end={{ x: 0.2, y: 0.1 }}
+                                            style={{
+                                                width: "100%",
+                                                height: 50,
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "flex-start",
+                                                paddingHorizontal: 20,
+                                                gap: 10,
+                                                shadowColor: "#0000005f",
+                                                shadowOffset: {
+                                                    width: 0,
+                                                    height: 2,
+                                                },
+                                                shadowOpacity: 0.25,
+                                                shadowRadius: 3.84,
+                                                elevation: 5,
+                                                borderTopLeftRadius: 5,
+                                                borderTopRightRadius: 15,
+                                                borderBottomLeftRadius: 15,
+                                                borderBottomRightRadius: 5,
+                                            }}
+                                        >
+                                            <Pressable
+                                                style={{ width: "100%", height: "auto", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
+                                                onPress={() => setRepoName(item)}
+                                            >
+                                                <Text>{item.name}</Text>
+                                                <Text>{item.stargazers_count} Stars</Text>
+                                            </Pressable>
+                                            {/* <Text   >{item.forks_count} Forks</Text> */}
+                                        </LinearGradient>
                                     )}
                                     showsVerticalScrollIndicator={false}
                                     showsHorizontalScrollIndicator={false}
@@ -228,22 +320,53 @@ const HomePage = () => {
                                 flexDirection: "row",
                                 gap: 20,
                             }}>
-                                <Text style={[styles.textIllusion, { width: "30%" }]}>TExt</Text>
-                                <Text style={[styles.textIllusion, { width: "30%", backgroundColor: "#63634252" }]}>TExt2</Text>
+                                <Pressable
+                                    onPress={() => setShowRepoDetails(false)}
+                                    style={{ width: "40%" }}>
+                                    <Text style={
+                                        [
+                                            styles.textIllusion,
+                                            {
+                                                width: "100%",
+                                                backgroundColor: `${showRepoDetails ? "#928e8e63" : "#6b917c"}`,
+                                                fontWeight: "semibold",
+                                                fontSize: 15,
+                                                paddingHorizontal: 10,
+                                                paddingVertical: 5,
+                                                borderRadius: 10,
+                                            }
+                                        ]
+                                    }>Language Analysis</Text>
+                                </Pressable>
+                                <Pressable onPress={() => setShowRepoDetails(true)}
+                                    style={{ width: "40%" }}>
+                                    <Text style={
+                                        [
+                                            styles.textIllusion,
+                                            {
+                                                width: "100%",
+                                                backgroundColor: `${showRepoDetails ? "#6b917c" : "#928e8e63"}`,
+                                                fontWeight: "normal",
+                                                fontSize: 15,
+                                                paddingHorizontal: 10,
+                                                paddingVertical: 5,
+                                                borderRadius: 10,
+                                            }
+                                        ]
+                                    }>Repo Details</Text>
+                                </Pressable>
                             </View>
+                            {/* Analysis Chart */}
                             <View style={{
                                 width: "100%",
-                                height: "80%",
+                                height: "100%",
                                 display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "flex-end",
+                                justifyContent: "center",
+                                alignItems: "flex-start",
                                 flexDirection: "row",
                             }}>
-                                <Text style={[styles.textIllusion, { width: "15%", height: "90%",backgroundColor: "#63634252" }]}>000</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", height: "70%",backgroundColor: "#63634252" }]}>000</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", height: "53%",backgroundColor: "#63634252" }]}>000</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", height: "60%",backgroundColor: "#63634252" }]}>000</Text>
-                                <Text style={[styles.textIllusion, { width: "15%", height: "80%",backgroundColor: "#63634252" }]}>000</Text>
+                                {/* Add loading ui while repo details changes */}
+                                {showRepoDetails ? <RepoDetailsChard /> : <AnalysisChart chartDetails={chartDetails} />}
 
                             </View>
                         </View>
@@ -299,7 +422,7 @@ const styles = StyleSheet.create({
     },
     socialLinks: {
         width: "100%",
-        height: "12%",
+        height: "10%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "flex-start",
@@ -309,25 +432,13 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         // marginVertical: 5,
     },
-    forksAndStars: {
-        width: "100%",
-        height: "8%",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexDirection: "row",
-        backgroundColor: "#d9d95eeb",
-        borderRadius: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-    },
     repositoryDetails: {
         width: "100%",
         height: "25%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "flex-start",
-        backgroundColor: "#abab6d49",
+        // backgroundColor: "#abab6d49",
         borderRadius: 15,
         paddingHorizontal: 10,
         paddingVertical: 5,
@@ -335,11 +446,11 @@ const styles = StyleSheet.create({
     },
     analytics: {
         width: "100%",
-        height: "23%",
+        height: "26%",
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "flex-start",
-        backgroundColor: "#abab6d49",
+        backgroundColor: "#A2CEB5",
         borderRadius: 15,
         paddingHorizontal: 10,
         paddingVertical: 5,
@@ -350,19 +461,19 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        // shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        backgroundColor: "#abab6d",
+        backgroundColor: "rgba(208, 223, 239, 0.4)",
         borderRadius: 10,
         paddingHorizontal: 10,
         paddingVertical: 5,
         // padding: 10,
+        shadowColor: "#9a9a9a",
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
+        shadowOpacity: 2,
+        shadowRadius: 1,
+        elevation: 2,
     },
     textIllusion: {
         fontWeight: "bold",
@@ -375,36 +486,6 @@ const styles = StyleSheet.create({
 })
 
 
-  // const languages = {
-    //     Java: 15493,
-    //     HTML: 10507,
-    //     Kotlin: 7740
-    // }
-
-    // const total = Object.values(languages).reduce((sum, val) => sum + val, 0)
-
-    // const percentages = Object.entries(languages).map(([lang, value]) => ({
-    //     language: lang,
-    //     percentage: ((value / total) * 100).toFixed(2)
-    // }))
-
-    // console.log(percentages)
 
 
-// const languageColors: Record<string, string> = {
-//   Java: "#b07219",
-//   HTML: "#e34c26",
-//   CSS: "#563d7c",
-//   JavaScript: "#f1e05a",
-//   TypeScript: "#3178c6",
-//   Kotlin: "#A97BFF",
-//   Python: "#3572A5",
-//   C: "#555555",
-//   "C++": "#f34b7d",
-//   CSharp: "#178600",
-//   Go: "#00ADD8",
-//   Rust: "#dea584",
-//   Swift: "#ffac45",
-//   Dart: "#00B4AB",
-//   Shell: "#89e051",
-// }
+
