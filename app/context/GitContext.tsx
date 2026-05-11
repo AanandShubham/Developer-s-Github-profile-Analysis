@@ -40,21 +40,13 @@ type GitHubUser = {
 type GitContextType = {
     user: GitHubUser | null
     setUser: React.Dispatch<React.SetStateAction<GitHubUser | null>>,
-    totalStars?: number,
-    setTotalStars?: React.Dispatch<React.SetStateAction<number>>,
-    totalForks?: number,
-    setTotalForks?: React.Dispatch<React.SetStateAction<number>>,
-    repos?: any[],
-    setRepos?: React.Dispatch<React.SetStateAction<any[]>>
+    repos: any[],
+    setRepos: React.Dispatch<React.SetStateAction<any[]>>
 }
 
 export const GitContext = React.createContext<GitContextType>({
     user: null,
     setUser: () => { },
-    totalForks: 0,
-    setTotalForks: () => { },
-    totalStars: 0,
-    setTotalStars: () => { },
     repos: [],
     setRepos: () => { }
 
@@ -62,8 +54,6 @@ export const GitContext = React.createContext<GitContextType>({
 
 export const GitContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<GitHubUser | null>(null)
-    const [totalForks, setTotalForks] = useState<number>(0)
-    const [totalStars, setTotalStars] = useState<number>(0)
     const [repos, setRepos] = useState<any[]>([])
 
     return (
@@ -71,10 +61,6 @@ export const GitContextProvider = ({ children }: { children: React.ReactNode }) 
             {
                 user,
                 setUser,
-                totalForks,
-                setTotalForks,
-                totalStars,
-                setTotalStars,
                 repos,
                 setRepos
             }
