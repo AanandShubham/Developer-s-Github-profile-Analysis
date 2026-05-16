@@ -6,9 +6,6 @@ import useGetUserDetails from "./hooks/useGetUserDetails"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { LinearGradient } from "expo-linear-gradient"
 
-
-
-
 export default function index() {
 
   const [inputValue, setInputValue] = useState("")
@@ -27,7 +24,6 @@ export default function index() {
               style={styles.page}
             >
 
-              {/* <View style={styles.page}> */}
               <View style={{ width: "90%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row",gap: 10 }}>
                 <Image
                   source={require("../assets/images/computerCoding.png")}
@@ -38,7 +34,6 @@ export default function index() {
                     textAlign: "center",
                     fontSize: 25,
                     color: "black",
-                    // marginBottom: 20,
                     fontFamily: "sans-serif",
                     fontWeight: "bold"
                   }
@@ -81,7 +76,6 @@ export default function index() {
                 style={styles.btn}
               >
                 <Pressable
-                  // style={styles.btn}
                   onPress={
                     async () => {
                       const data = await getUserDetails(inputValue)
@@ -98,9 +92,7 @@ export default function index() {
                 >
 
 
-                  {/* <View> */}
                   <Text style={{ color: "#1c1e1f", fontStyle: "italic", fontSize: 20, fontWeight: "semibold", fontFamily: "sans-serif" }}>Submit</Text>
-                  {/* </View> */}
                 </Pressable>
               </LinearGradient>
 
@@ -169,8 +161,6 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   btn: {
-    // marginTop: -20,
-    // backgroundColor: "#000",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
