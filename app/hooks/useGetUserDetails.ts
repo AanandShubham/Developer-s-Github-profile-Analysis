@@ -17,6 +17,10 @@ const useGetUserDetails = () => {
 
             const response = await fetch(`https://api.github.com/users/${userName}`)
             const data = await response.json()
+            if(data.message === "Not Found"){
+                setLoading(false)
+                return false
+            }
             // starred_url , received_events_url , repos_url
 
 
@@ -49,12 +53,12 @@ const useGetUserDetails = () => {
                 setRepos(() => reposData) // Update the repos state with the fetched repositories
             }
 
-            console.log("-----------------------------------------------")
-            // console.log("Fetched user details:", data)
-            console.log("-----------------------------------------------")
+            // console.log("-----------------------------------------------")
+            // // console.log("Fetched user details:", data)
+            // console.log("-----------------------------------------------")
             setUser(data)
             setLoading(false)
-            return data
+            return true
         } catch (error) {
             console.log("-----------------------------------------------")
             console.error("Error fetching user details:", error)
