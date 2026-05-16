@@ -1,6 +1,6 @@
-import React, { use, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { StyleSheet, View, Text, Image, FlatList, Pressable } from "react-native"
+import { StyleSheet, View, Text, Image, FlatList, Pressable, BackHandler } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import useGitContext from './context/GitContext'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
@@ -8,14 +8,14 @@ import AnalysisChart from './components/AnalysisChart'
 import useRepoDetails from './hooks/useRepoDetails'
 import getLanguagePercentAndColor from './utils/getLanguagePercentAndColor'
 import RepoDetailsChard from './components/RepoDetailsChard';
+import { useFocusEffect, useRouter } from 'expo-router';
 
-
-// create language Analitics Chart and Repo Details Card 
-// then make the ui design same as the figma design.
 
 const HomePage = () => {
 
-    const { user, totalForks, totalStars, repos } = useGitContext()
+    const router = useRouter()
+
+    const { user, repos, setRepos, setUser } = useGitContext()
     const reversedRepos = useMemo(
         () => {
             return repos ? [...repos].reverse() : []
@@ -23,22 +23,43 @@ const HomePage = () => {
     )
 
     const { getRepoDetails, loading } = useRepoDetails()
-    const [repoName, setRepoName] = useState(reversedRepos && reversedRepos.length > 0 ? reversedRepos[0] : "")
+    const [selectedRepo, setSelectedRepo] = useState(reversedRepos && reversedRepos.length > 0 ? reversedRepos[0] : "")
     const [chartDetails, setChartDetails] = useState<any>([])
     const [showRepoDetails, setShowRepoDetails] = useState(false)
+    // const [selectedRepoDetails, setSelectedRepoDetails] = useState<any>(null)
 
     useEffect(() => {
-        if (repoName) {
+        if (selectedRepo) {
             const fetchRepoDetails = async () => {
-                const details = await getRepoDetails({ repoName })
+                const details = await getRepoDetails({ selectedRepo: selectedRepo })
+                // setSelectedRepoDetails(() => details)
                 // console.log("REpo Details in Home Page : ",details)
+                console.log("REpoDetails : ", selectedRepo)
+
                 const languageDetails = getLanguagePercentAndColor({ languages: details })
                 setChartDetails(() => languageDetails)
                 console.log("Language Chart Details : ", JSON.stringify(chartDetails, null, 2))
             }
             fetchRepoDetails()
         }
-    }, [repoName])
+    }, [selectedRepo])
+
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                // BackHandler.exitApp()
+                // setRepos([])
+                setUser(null)
+                router.back()
+                return true
+            }
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => subscription.remove()
+        }, [])
+    )
 
     return (
         <SafeAreaView style={styles.container}>
@@ -50,7 +71,6 @@ const HomePage = () => {
                         end={{ x: 0.8, y: 1 }}
                         style={styles.page}
                     >
-                        {/* <View style={styles.page}> */}
                         {/* // header */}
                         <View style={styles.header}>
                             <View style={styles.headerButtons}>
@@ -123,6 +143,7 @@ const HomePage = () => {
                         </View>
                         {/* // follower */}
                         <View style={styles.followers}>
+
                             <LinearGradient
                                 colors={["#A2CEB5", "#BCCB91"]}
                                 start={{ x: 0.95, y: 1.5 }}
@@ -179,7 +200,35 @@ const HomePage = () => {
 
                             </LinearGradient>
 
-                            <View style={{
+                            <LinearGradient
+                                colors={["#A2CEB5", "#BCCB91"]}
+                                start={{ x: 0.95, y: 0.1 }}
+                                end={{ x: 0.1, y: 1 }}
+                                style={{
+                                    width: "32%",
+                                    height: "100%",
+                                    borderRadius: 15,
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    paddingHorizontal: 20,
+                                    gap: 10,
+                                    shadowColor: "#0000005f",
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 2,
+                                    },
+                                    shadowOpacity: 0.25,
+                                    shadowRadius: 3.84,
+                                    elevation: 5,
+                                }}
+                            >
+                                <Text>{user?.public_repos || 0}</Text>
+                                <Text>repositories</Text>
+
+                            </LinearGradient>
+
+                            {/* <View style={{
                                 width: "32%",
                                 height: "100%",
                                 borderRadius: 15,
@@ -190,7 +239,7 @@ const HomePage = () => {
                             }}>
                                 <Text>{user?.public_repos || 0}</Text>
                                 <Text>repositories</Text>
-                            </View>
+                            </View> */}
 
                         </View>
                         {/* // social links */}
@@ -290,11 +339,26 @@ const HomePage = () => {
                                                 borderTopRightRadius: 15,
                                                 borderBottomLeftRadius: 15,
                                                 borderBottomRightRadius: 5,
+                                                borderRadius: item == selectedRepo ? 10 : 0,
+                                                borderColor: item == selectedRepo ? "gray" : "transparent",
+                                                borderWidth: item == selectedRepo ? 1 : 0,
                                             }}
                                         >
                                             <Pressable
-                                                style={{ width: "100%", height: "auto", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-                                                onPress={() => setRepoName(item)}
+
+                                                style={
+                                                    {
+                                                        width: "100%",
+                                                        // height: "auto",
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+
+
+                                                    }
+                                                }
+                                                onPress={() => setSelectedRepo(item)}
                                             >
                                                 <Text>{item.name}</Text>
                                                 <Text>{item.stargazers_count} Stars</Text>
@@ -366,7 +430,7 @@ const HomePage = () => {
                                 flexDirection: "row",
                             }}>
                                 {/* Add loading ui while repo details changes */}
-                                {showRepoDetails ? <RepoDetailsChard /> : <AnalysisChart chartDetails={chartDetails} />}
+                                {showRepoDetails ? <RepoDetailsChard repo={selectedRepo} /> : <AnalysisChart chartDetails={chartDetails} />}
 
                             </View>
                         </View>
@@ -397,7 +461,7 @@ const styles = StyleSheet.create({
     },
     header: {
         width: "100%",
-        height: "5%",
+        height: "3%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -446,14 +510,14 @@ const styles = StyleSheet.create({
     },
     analytics: {
         width: "100%",
-        height: "26%",
+        height: "30%",
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "flex-start",
         backgroundColor: "#A2CEB5",
         borderRadius: 15,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        // paddingHorizontal: 10,
+        // paddingVertical: 5,
         // marginVertical: 5,
     },
     headerButtons: {
