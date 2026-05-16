@@ -9,14 +9,10 @@ const RepoDetailsChard = ({ repo }: { repo: any }) => {
     day: 'numeric',
   }
 
-  // Convert ISO date strings to Date objects and format them
   const createdAt = new Date(repo.created_at).toLocaleDateString('en-GB', dateOptions)
   const updatedAt = new Date(repo.updated_at).toLocaleDateString('en-GB', dateOptions)
   const pushedAt = new Date(repo.pushed_at).toLocaleDateString('en-GB', dateOptions)
 
-  // console.log("created : ", createdAt)
-  // console.log("updated_at : ", updatedAt)
-  // console.log("pushed_at : ", pushedAt)
 
   return (
 
@@ -113,7 +109,6 @@ const RepoDetailsChard = ({ repo }: { repo: any }) => {
             justifyContent: "space-around",
             alignItems: "center",
             flexDirection: "row",
-            // backgroundColor: "#bd5555"
           }
         }>
           {/* push and updated at */}
@@ -146,7 +141,6 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "flex-start",
-    // paddingTop: 10,
   },
   repoSection: {
     width: "98%",
@@ -154,7 +148,6 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "flex-start",
-    // backgroundColor: "#f0f0f0",
     borderRadius: 10,
     borderColor: "gray",
     borderWidth: 1,
@@ -172,14 +165,11 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "space-evenly",
     alignItems: "center",
-    flexDirection: "row",
-    // backgroundColor: "#bd5555",
-    
+    flexDirection: "row",    
   },
   statsStyle: {
     width: "auto",
     height: "auto",
-    // backgroundColor: "lightgray",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
@@ -197,7 +187,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "gray",
     borderWidth: 1,
-    // backgroundColor: "lightgray",
   }
 })
 

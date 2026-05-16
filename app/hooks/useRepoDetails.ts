@@ -4,7 +4,6 @@ const useRepoDetails = () => {
     const [loading, setLoading] = useState(false)
 
     const getRepoDetails = async ({ selectedRepo }: { selectedRepo: any }) => {
-        // console.log("Repo Name : ",repoName)
         setLoading(true)
         try {
             const response = await fetch(selectedRepo.languages_url)

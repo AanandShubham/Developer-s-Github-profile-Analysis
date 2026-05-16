@@ -15,7 +15,7 @@ const HomePage = () => {
 
     const router = useRouter()
 
-    const { user, repos, setRepos, setUser } = useGitContext()
+    const { user, repos, setUser } = useGitContext()
     const reversedRepos = useMemo(
         () => {
             return repos ? [...repos].reverse() : []
@@ -26,19 +26,17 @@ const HomePage = () => {
     const [selectedRepo, setSelectedRepo] = useState(reversedRepos && reversedRepos.length > 0 ? reversedRepos[0] : "")
     const [chartDetails, setChartDetails] = useState<any>([])
     const [showRepoDetails, setShowRepoDetails] = useState(false)
-    // const [selectedRepoDetails, setSelectedRepoDetails] = useState<any>(null)
 
     useEffect(() => {
         if (selectedRepo) {
             const fetchRepoDetails = async () => {
                 const details = await getRepoDetails({ selectedRepo: selectedRepo })
-                // setSelectedRepoDetails(() => details)
-                // console.log("REpo Details in Home Page : ",details)
-                console.log("REpoDetails : ", selectedRepo)
+
+                // console.log("REpoDetails : ", selectedRepo)
 
                 const languageDetails = getLanguagePercentAndColor({ languages: details })
                 setChartDetails(() => languageDetails)
-                console.log("Language Chart Details : ", JSON.stringify(chartDetails, null, 2))
+                // console.log("Language Chart Details : ", JSON.stringify(chartDetails, null, 2))
             }
             fetchRepoDetails()
         }
@@ -48,8 +46,6 @@ const HomePage = () => {
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
-                // BackHandler.exitApp()
-                // setRepos([])
                 setUser(null)
                 router.back()
                 return true
@@ -228,18 +224,6 @@ const HomePage = () => {
 
                             </LinearGradient>
 
-                            {/* <View style={{
-                                width: "32%",
-                                height: "100%",
-                                borderRadius: 15,
-                                backgroundColor: "#abab6d49",
-                                display: "flex",
-                                justifyContent: "space-around",
-                                alignItems: "center",
-                            }}>
-                                <Text>{user?.public_repos || 0}</Text>
-                                <Text>repositories</Text>
-                            </View> */}
 
                         </View>
                         {/* // social links */}
@@ -264,8 +248,6 @@ const HomePage = () => {
                                 flexDirection: "row",
                                 backgroundColor: "transparent",
                                 borderRadius: 15,
-                                // paddingHorizontal: 10,
-                                // paddingVertical: 5,
                             }}>
 
                                 <FontAwesome name="github" size={32} color="#000" />
@@ -277,18 +259,6 @@ const HomePage = () => {
                             </View>
                         </View>
 
-                        {/* forks and stars */}
-                        {/* <View style={styles.forksAndStars}>
-                            <View>
-                                <Text style={{ fontWeight: "bold", fontSize: 18 }}>Total Forks</Text>
-                                <Text>{totalForks}</Text>
-                            </View>
-                            <View>
-                                <Text style={{ fontWeight: "bold", fontSize: 18 }}>Total Stars</Text>
-                                <Text>{totalStars}</Text>
-                            </View>
-
-                        </View> */}
 
                         {/* // repository details */}
                         <View style={styles.repositoryDetails}>
@@ -349,7 +319,6 @@ const HomePage = () => {
                                                 style={
                                                     {
                                                         width: "100%",
-                                                        // height: "auto",
                                                         display: "flex",
                                                         flexDirection: "row",
                                                         justifyContent: "space-between",
@@ -363,7 +332,7 @@ const HomePage = () => {
                                                 <Text>{item.name}</Text>
                                                 <Text>{item.stargazers_count} Stars</Text>
                                             </Pressable>
-                                            {/* <Text   >{item.forks_count} Forks</Text> */}
+
                                         </LinearGradient>
                                     )}
                                     showsVerticalScrollIndicator={false}
@@ -430,7 +399,14 @@ const HomePage = () => {
                                 flexDirection: "row",
                             }}>
                                 {/* Add loading ui while repo details changes */}
-                                {showRepoDetails ? <RepoDetailsChard repo={selectedRepo} /> : <AnalysisChart chartDetails={chartDetails} />}
+                                {
+                                    showRepoDetails ?
+                                        (
+                                            <RepoDetailsChard repo={selectedRepo} />
+                                        ) : (
+                                            <AnalysisChart chartDetails={chartDetails} />
+                                        )
+                                }
 
                             </View>
                         </View>
@@ -474,7 +450,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "row",
-        // paddingVertical: 5,
     },
     followers: {
         width: "100%",
@@ -490,11 +465,9 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "flex-start",
-        // backgroundColor: "#abab6d49",
         borderRadius: 15,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        // marginVertical: 5,
     },
     repositoryDetails: {
         width: "100%",
@@ -502,7 +475,6 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "flex-start",
-        // backgroundColor: "#abab6d49",
         borderRadius: 15,
         paddingHorizontal: 10,
         paddingVertical: 5,
@@ -516,9 +488,6 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         backgroundColor: "#A2CEB5",
         borderRadius: 15,
-        // paddingHorizontal: 10,
-        // paddingVertical: 5,
-        // marginVertical: 5,
     },
     headerButtons: {
         width: "20%",
@@ -529,7 +498,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         paddingVertical: 5,
-        // padding: 10,
         shadowColor: "#9a9a9a",
         shadowOffset: {
             width: 1,
@@ -544,7 +512,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         width: "100%",
         borderRadius: 10,
-        // backgroundColor: "#6c6c4097",
     },
 
 })

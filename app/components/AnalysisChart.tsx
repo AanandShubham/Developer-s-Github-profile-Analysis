@@ -12,7 +12,6 @@ const AnalysisChart = ({ chartDetails }: { chartDetails: any }) => {
                     justifyContent: "center",
                     alignItems: "flex-end",
                     position: "relative",
-                    // backgroundColor: "#63634252",
                     width: "100%",
                     height: "100%",
                 }
@@ -91,12 +90,3 @@ const styles = StyleSheet.create({
         height: "70%",
     }
 })
-
-
-
-//  <View style={{ height: "50%", minWidth: "20%", paddingHorizontal: 10, backgroundColor: "#ffffffae", borderRadius: 5, borderTopEndRadius: "20%", borderTopStartRadius: "20%", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-//                             <Text>java</Text>
-//                         </View>
-//                         <View style={{ height: "80%", minWidth: "20%", paddingHorizontal: 10, backgroundColor: "#fff", borderRadius: 5, borderTopEndRadius: "20%", borderTopStartRadius: "20%", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-//                             <Text>python</Text>
-//                         </View>
